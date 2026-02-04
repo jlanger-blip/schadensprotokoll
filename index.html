@@ -278,6 +278,21 @@
       display: block;
     }
 
+    /* Signature */
+    .signature-wrapper{
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      background: var(--input-bg);
+      overflow: hidden;
+    }
+    .signature-canvas{
+      width: 100%;
+      height: 150px;
+      display: block;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
     /* Address validation */
     .address-status{
       margin-top: 8px;
@@ -494,15 +509,32 @@
           
           <div class="conditional-field" id="locationSection">
             <label for="carLocation">Wo steht das Fahrzeug? *</label>
-            <input type="text" id="carLocation" placeholder="Adresse eingeben...">
-            <div class="address-status" id="addressStatus"></div>
-            <input type="hidden" id="carLocationValidated" value="">
+            <input type="text" id="carLocation" placeholder="z.B. Parkplatz Lidl, Hauptstraße 15, 68199 Mannheim">
           </div>
         </div>
 
         <div class="field" style="grid-column: span 12;">
           <label for="additionalNotes">Zusätzliche Bemerkungen (optional)</label>
           <textarea id="additionalNotes" placeholder="Weitere Informationen zum Schaden oder Fahrzeugzustand..."></textarea>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ABSCHNITT 7: Unterschrift -->
+      <div class="section-title">
+        <h2>7) Unterschrift</h2>
+        <p>Bitte mit Finger oder Stift unterschreiben.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field" style="grid-column: span 12;">
+          <label>Unterschrift Fahrer/Mitarbeiter *</label>
+          <div class="signature-wrapper">
+            <canvas id="sigEmployee" class="signature-canvas"></canvas>
+            <input type="hidden" id="sigEmployeeData" value="">
+          </div>
+          <button type="button" class="btn small" id="btnClearSig" style="margin-top:8px;">Unterschrift löschen</button>
         </div>
       </div>
 
@@ -602,49 +634,6 @@
     }
     driveableYes.addEventListener('change', updateLocationVisibility);
     driveableNo.addEventListener('change', updateLocationVisibility);
-
-    // ========== GOOGLE MAPS ADDRESS VALIDATION ==========
-    const addressStatus = document.getElementById('addressStatus');
-    const carLocationValidated = document.getElementById('carLocationValidated');
-    let addressTimeout = null;
-
-    carLocation.addEventListener('input', function(){
-      clearTimeout(addressTimeout);
-      const addr = this.value.trim();
-      
-      if(addr.length < 5){
-        addressStatus.textContent = '';
-        addressStatus.className = 'address-status';
-        carLocationValidated.value = '';
-        return;
-      }
-      
-      addressStatus.textContent = '⏳ Adresse wird geprüft...';
-      addressStatus.className = 'address-status checking';
-      
-      addressTimeout = setTimeout(async () => {
-        try {
-          const apiKey = 'AIzaSyAz5_nA5tRVwSH2KX7ob0uO1CfnA_mE5LI';
-          const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addr)}&key=${apiKey}&language=de`);
-          const data = await response.json();
-          
-          if(data.status === 'OK' && data.results && data.results.length > 0){
-            const result = data.results[0];
-            addressStatus.textContent = '✅ ' + result.formatted_address;
-            addressStatus.className = 'address-status valid';
-            carLocationValidated.value = result.formatted_address;
-          } else {
-            addressStatus.textContent = '⚠️ Adresse nicht gefunden. Bitte prüfen.';
-            addressStatus.className = 'address-status invalid';
-            carLocationValidated.value = '';
-          }
-        } catch(e){
-          addressStatus.textContent = '⚠️ Adressprüfung fehlgeschlagen.';
-          addressStatus.className = 'address-status invalid';
-          carLocationValidated.value = '';
-        }
-      }, 800);
-    });
 
     // ========== PHOTO HANDLING ==========
     // Sketch photo
@@ -834,6 +823,12 @@
         }
       }
 
+      // Signature required
+      if(!sigData.value){
+        showMsg('Bitte Unterschrift hinzufügen.', 'error');
+        return false;
+      }
+
       return true;
     }
 
@@ -855,8 +850,8 @@
         damagePhotos: JSON.parse(damagePhotosStore.value || '[]'),
         driveable: document.querySelector('input[name="driveable"]:checked')?.value,
         carLocation: carLocation.value,
-        carLocationValidated: carLocationValidated.value,
         additionalNotes: document.getElementById('additionalNotes').value,
+        signature: sigData.value,
         photos: []
       };
 
@@ -1002,7 +997,7 @@
           <div class="box-title">Fahrzeugzustand</div>
           <div class="grid">
             <div class="kv" style="grid-column: span 6;"><div class="k">Fahrbereit</div><div class="v">${data.driveable === 'ja' ? 'Ja' : 'Nein'}</div></div>
-            ${data.driveable === 'nein' ? `<div class="kv" style="grid-column: span 6;"><div class="k">Standort</div><div class="v">${escapeHtml(data.carLocationValidated || data.carLocation)}</div></div>` : ''}
+            ${data.driveable === 'nein' ? `<div class="kv" style="grid-column: span 6;"><div class="k">Standort</div><div class="v">${escapeHtml(data.carLocation)}</div></div>` : ''}
             ${data.additionalNotes ? `<div class="kv" style="grid-column: span 12;"><div class="k">Zusätzliche Bemerkungen</div><div class="v" style="font-weight:500;">${escapeHtml(data.additionalNotes)}</div></div>` : ''}
           </div>
         </div>
@@ -1026,6 +1021,13 @@
           <div class="photo-grid">${photoGridHtml}</div>
         </div>
 
+        <div class="box">
+          <div class="box-title">Unterschrift Fahrer/Mitarbeiter</div>
+          ${data.signature 
+            ? `<img src="${data.signature}" alt="Unterschrift" style="max-width:300px; height:auto; border:1px solid #ccc; border-radius:10px;">`
+            : `<div style="color:#b00;">Fehlt</div>`}
+        </div>
+
         <div class="footer">
           <strong>ALMAS INDUSTRIES AG</strong><br>
           Floßwörthstraße 57 | D-68199 Mannheim<br>
@@ -1039,6 +1041,77 @@
       win.document.write(html);
       win.document.close();
     }
+
+    // ========== SIGNATURE PAD ==========
+    const sigCanvas = document.getElementById('sigEmployee');
+    const sigData = document.getElementById('sigEmployeeData');
+    const btnClearSig = document.getElementById('btnClearSig');
+    let sigCtx = sigCanvas.getContext('2d');
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    function resizeSignatureCanvas(){
+      const rect = sigCanvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      sigCanvas.width = rect.width * ratio;
+      sigCanvas.height = rect.height * ratio;
+      sigCtx = sigCanvas.getContext('2d');
+      sigCtx.scale(ratio, ratio);
+      sigCtx.strokeStyle = '#000';
+      sigCtx.lineWidth = 2;
+      sigCtx.lineCap = 'round';
+      sigCtx.lineJoin = 'round';
+    }
+
+    function getPos(e){
+      const rect = sigCanvas.getBoundingClientRect();
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+      return { x, y };
+    }
+
+    function startDrawing(e){
+      isDrawing = true;
+      const pos = getPos(e);
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+
+    function draw(e){
+      if(!isDrawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      sigCtx.beginPath();
+      sigCtx.moveTo(lastX, lastY);
+      sigCtx.lineTo(pos.x, pos.y);
+      sigCtx.stroke();
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+
+    function stopDrawing(){
+      if(isDrawing){
+        isDrawing = false;
+        sigData.value = sigCanvas.toDataURL('image/png');
+      }
+    }
+
+    sigCanvas.addEventListener('mousedown', startDrawing);
+    sigCanvas.addEventListener('mousemove', draw);
+    sigCanvas.addEventListener('mouseup', stopDrawing);
+    sigCanvas.addEventListener('mouseleave', stopDrawing);
+    sigCanvas.addEventListener('touchstart', startDrawing, { passive: false });
+    sigCanvas.addEventListener('touchmove', draw, { passive: false });
+    sigCanvas.addEventListener('touchend', stopDrawing);
+
+    btnClearSig.addEventListener('click', () => {
+      sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+      sigData.value = '';
+    });
+
+    window.addEventListener('resize', resizeSignatureCanvas);
+    resizeSignatureCanvas();
 
     // ========== INIT ==========
     // Set today's date
