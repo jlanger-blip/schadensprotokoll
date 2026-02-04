@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Schadensprotokoll - ALMAS INDUSTRIES</title>
+  <style>
+    :root{
+      --bg: #f5f5f5;
+      --card: #ffffff;
+      --text: #111111;
+      --muted: #666666;
+      --accent: #c8102e;
+      --border: #dddddd;
+      --input-bg: #ffffff;
+      --input-border: #cccccc;
+    }
+    html.dark{
+      --bg: #1a1a1a;
+      --card: #242424;
+      --text: #eeeeee;
+      --muted: #999999;
+      --border: #444444;
+      --input-bg: #2e2e2e;
+      --input-border: #555555;
+    }
+    *,*::before,*::after{box-sizing:border-box;}
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 16px;
+      line-height: 1.5;
+    }
+    .wrap{
+      max-width:1100px;
+      margin: 0 auto;
+    }
+    header{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header .title h1{
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+    header .title p{
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .section-title{
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+    .section-title h2{
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+    .section-title p{
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .divider{
+      border: none;
+      border-top: 1px dashed var(--border);
+      margin: 24px 0;
+    }
+    .grid{
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+    }
+    .field label{
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    select,
+    textarea{
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 1rem;
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      background: var(--input-bg);
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus, select:focus, textarea:focus{
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200,16,46,0.15);
+    }
+    textarea{ min-height: 70px; resize: vertical; }
+    .btn{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn:hover{ background: var(--bg); }
+    .btn.primary{
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .btn.primary:hover{ background: #a00d24; }
+    .btn.icon{ padding: 8px 10px; }
+    .msg{ padding: 10px 14px; border-radius: 10px; font-size: 0.9rem; }
+    .msg.success{ background: #d4edda; color: #155724; }
+    .msg.error{ background: #f8d7da; color: #721c24; }
+    .msg.muted{ background: var(--bg); color: var(--muted); }
+    .row{ display: flex; flex-wrap: wrap; align-items: center; }
+
+    /* Checkbox/Radio styling */
+    .checkbox-group{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .checkbox-group label{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: normal;
+      cursor: pointer;
+    }
+    .checkbox-group input[type="checkbox"],
+    .checkbox-group input[type="radio"]{
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    /* Photo upload styling */
+    .photo-card{
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      transition: border-color 0.15s;
+    }
+    .photo-card:hover{ border-color: var(--accent); }
+    .photo-card .preview{
+      width: 100%;
+      height: 180px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .photo-card .preview img{
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+    .photo-card .preview .hint{
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .photo-card .meta{ font-size: 0.85rem; }
+    .photo-card .meta strong{ display: block; margin-bottom: 2px; }
+    .photo-card input[type="file"]{ display: none; }
+
+    .photo-grid{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    /* Multi-photo upload */
+    .photo-actions{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .thumbs{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .thumb{
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    .thumb img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .thumb button{
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      line-height: 16px;
+    }
+    .btn.small{
+      padding: 6px 10px;
+      font-size: 0.85rem;
+    }
+    .btn.danger{
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .file-hidden{ display: none; }
+    .smallnote{
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Conditional fields */
+    .conditional-field{
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 10px;
+    }
+    .conditional-field.visible{
+      display: block;
+    }
+
+    /* Address validation */
+    .address-status{
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+    .address-status.valid{ color: #28a745; }
+    .address-status.invalid{ color: var(--accent); }
+    .address-status.checking{ color: var(--muted); }
+
+    @media print{
+      body{ background:#fff; color:#000; }
+      .wrap{ max-width:none; margin:0; padding:0; }
+      .card{ box-shadow:none; background:#fff; border-color:#ddd; }
+      header, .no-print{ display:none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <img src="almas-logo-small.jpg" alt="ALMAS INDUSTRIES" style="height:48px; border-radius:8px;">
+        <div class="title">
+          <h1 style="color:var(--accent);">Schadensprotokoll</h1>
+          <p>Digitales Protokoll zur Schadensmeldung am Fahrzeug</p>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button class="btn icon" id="btnDarkMode" title="Dark Mode umschalten" type="button">
+          <svg id="iconSun" width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/></svg>
+          <svg id="iconMoon" width="20" height="20" fill="currentColor" viewBox="0 0 20 20" style="display:none;"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="row no-print" style="justify-content:space-between; gap:12px;">
+        <div class="row" style="gap:8px;">
+          <button class="btn primary" id="btnSend" type="button">Senden</button>
+          <button class="btn" id="btnPrint" type="button">Druckansicht / PDF</button>
+          <button class="btn" id="btnReset" type="button">Alles zurücksetzen</button>
+        </div>
+        <span class="muted" style="font-size:12px;">Version 1.0</span>
+      </div>
+
+      <div id="messages" class="msg muted no-print" style="margin-top:12px; margin-bottom:12px;"></div>
+
+      <!-- ABSCHNITT 1: Allgemeine Angaben -->
+      <div class="section-title">
+        <h2>1) Allgemeine Angaben</h2>
+        <p>Pflichtfelder sind mit * markiert.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field" style="grid-column: span 4;">
+          <label for="date">Datum des Schadens *</label>
+          <input id="date" type="date" required>
+        </div>
+        <div class="field" style="grid-column: span 4;">
+          <label for="time">Uhrzeit (ca.) *</label>
+          <input id="time" type="time" required>
+        </div>
+        <div class="field" style="grid-column: span 4;">
+          <label for="location">Ort des Schadens *</label>
+          <input id="location" type="text" placeholder="z.B. Parkplatz Supermarkt Mannheim" required>
+        </div>
+
+        <div class="field" style="grid-column: span 6;">
+          <label for="employee">Fahrer / Mitarbeiter *</label>
+          <input id="employee" type="text" placeholder="Vorname Nachname" required>
+        </div>
+        <div class="field" style="grid-column: span 6;">
+          <label for="employeeEmail">E-Mail Mitarbeiter</label>
+          <input id="employeeEmail" type="email" placeholder="vorname.nachname@almas-industries.de">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ABSCHNITT 2: Fahrzeugdaten -->
+      <div class="section-title">
+        <h2>2) Fahrzeugdaten</h2>
+        <p>Bitte Daten vom Fahrzeugschein/Display übernehmen.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field" style="grid-column: span 4;">
+          <label for="plate">Kennzeichen *</label>
+          <input id="plate" type="text" placeholder="z.B. MA-AI 123" required>
+        </div>
+        <div class="field" style="grid-column: span 4;">
+          <label for="model">Marke / Modell *</label>
+          <input id="model" type="text" placeholder="z.B. VW Golf" required>
+        </div>
+        <div class="field" style="grid-column: span 4;">
+          <label for="mileage">Kilometerstand (km) *</label>
+          <input id="mileage" type="number" min="0" step="1" placeholder="z.B. 54210" required>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ABSCHNITT 3: Schadenshergang -->
+      <div class="section-title">
+        <h2>3) Schadenshergang</h2>
+        <p>Informationen zum Unfallhergang.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field" style="grid-column: span 6;">
+          <label for="faultType">Art des Verschuldens *</label>
+          <select id="faultType" required>
+            <option value="">Bitte auswählen ...</option>
+            <option value="eigen">Eigenverschulden</option>
+            <option value="fremd">Fremdverschulden</option>
+            <option value="unbekannt">Unbekannt</option>
+            <option value="mehrfach">Mehrfachauswahl / Unklar</option>
+          </select>
+        </div>
+
+        <div class="field" style="grid-column: span 6;">
+          <label>Polizei hinzugezogen? *</label>
+          <div class="checkbox-group">
+            <label><input type="radio" name="police" value="ja" required> Ja</label>
+            <label><input type="radio" name="police" value="nein"> Nein</label>
+          </div>
+        </div>
+
+        <div class="field" style="grid-column: span 12;">
+          <label>Schuldfrage geklärt? *</label>
+          <div class="checkbox-group">
+            <label><input type="radio" name="faultCleared" value="ja" id="faultClearedYes" required> Ja</label>
+            <label><input type="radio" name="faultCleared" value="nein" id="faultClearedNo"> Nein</label>
+          </div>
+          
+          <div class="conditional-field" id="faultCommentSection">
+            <label for="faultComment">Erklärung zur Schuldfrage *</label>
+            <textarea id="faultComment" placeholder="Bitte erläutern Sie, wie die Schuldfrage geklärt wurde..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ABSCHNITT 4: Schadenserklärung -->
+      <div class="section-title">
+        <h2>4) Schadenserklärung</h2>
+        <p>Unfallskizze und/oder Fotos vom Schaden.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field" style="grid-column: span 12;">
+          <label>Unfallskizze (optional)</label>
+          <div class="photo-card">
+            <div class="preview" id="sketch_prev">
+              <img alt="Unfallskizze">
+              <span class="hint">Klicken zum Hochladen einer Skizze</span>
+            </div>
+            <div class="meta">
+              <strong>Unfallskizze</strong>
+              <span>Zeichnung oder Foto einer Skizze</span>
+            </div>
+            <input type="file" id="sketch" accept="image/*" capture="environment">
+          </div>
+        </div>
+
+        <div class="field" style="grid-column: span 12;">
+          <label>Schadensfotos *</label>
+          <p class="smallnote" style="margin-top:0;">Mindestens ein Foto des Schadens erforderlich.</p>
+          <div id="damagePhotosContainer">
+            <div class="photo-actions">
+              <button class="btn small" type="button" id="btnAddDamagePhoto">📷 Foto hinzufügen</button>
+              <button class="btn small danger" type="button" id="btnClearDamagePhotos">Fotos löschen</button>
+              <input class="file-hidden" type="file" accept="image/*" capture="environment" id="damagePhotoInput">
+            </div>
+            <div class="thumbs" id="damageThumbs"></div>
+            <input type="hidden" id="damagePhotosStore" value="[]">
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ABSCHNITT 5: Pflichtfotos -->
+      <div class="section-title">
+        <h2>5) Pflichtfotos</h2>
+        <p>Dokumentation des Fahrzeugzustands.</p>
+      </div>
+
+      <div class="photo-grid" id="photoGrid"></div>
+
+      <div class="divider"></div>
+
+      <!-- ABSCHNITT 6: Fahrzeugzustand -->
+      <div class="section-title">
+        <h2>6) Fahrzeugzustand</h2>
+        <p>Ist das Fahrzeug noch fahrbereit?</p>
+      </div>
+
+      <div class="grid">
+        <div class="field" style="grid-column: span 12;">
+          <label>Fahrzeug fahrbereit? *</label>
+          <div class="checkbox-group">
+            <label><input type="radio" name="driveable" value="ja" id="driveableYes" required> Ja</label>
+            <label><input type="radio" name="driveable" value="nein" id="driveableNo"> Nein</label>
+          </div>
+          
+          <div class="conditional-field" id="locationSection">
+            <label for="carLocation">Wo steht das Fahrzeug? *</label>
+            <input type="text" id="carLocation" placeholder="Adresse eingeben...">
+            <div class="address-status" id="addressStatus"></div>
+            <input type="hidden" id="carLocationValidated" value="">
+          </div>
+        </div>
+
+        <div class="field" style="grid-column: span 12;">
+          <label for="additionalNotes">Zusätzliche Bemerkungen (optional)</label>
+          <textarea id="additionalNotes" placeholder="Weitere Informationen zum Schaden oder Fahrzeugzustand..."></textarea>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ========== DARK MODE ==========
+    const btnDarkMode = document.getElementById('btnDarkMode');
+    const iconSun = document.getElementById('iconSun');
+    const iconMoon = document.getElementById('iconMoon');
+    
+    function setDarkMode(dark){
+      document.documentElement.classList.toggle('dark', dark);
+      iconSun.style.display = dark ? 'none' : 'block';
+      iconMoon.style.display = dark ? 'block' : 'none';
+      localStorage.setItem('darkMode', dark ? '1' : '0');
+    }
+    
+    btnDarkMode.addEventListener('click', () => {
+      setDarkMode(!document.documentElement.classList.contains('dark'));
+    });
+    
+    // Init dark mode
+    if(localStorage.getItem('darkMode') === '1' || 
+       (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)){
+      setDarkMode(true);
+    }
+
+    // ========== IMAGE COMPRESSION ==========
+    function compressImage(file, maxWidth = 1600, quality = 0.75){
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("Datei konnte nicht gelesen werden."));
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onerror = () => reject(new Error("Bild konnte nicht geladen werden."));
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > maxWidth) {
+              height = Math.round(height * maxWidth / width);
+              width = maxWidth;
+            }
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(dataUrl);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function readFileAsDataURL(file){
+      if (file.type && file.type.startsWith('image/')) {
+        return compressImage(file, 1600, 0.75);
+      }
+      return new Promise((resolve, reject)=>{
+        const reader = new FileReader();
+        reader.onload = ()=> resolve(reader.result);
+        reader.onerror = ()=> reject(new Error("Datei konnte nicht gelesen werden."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ========== CONDITIONAL FIELDS ==========
+    const faultClearedYes = document.getElementById('faultClearedYes');
+    const faultClearedNo = document.getElementById('faultClearedNo');
+    const faultCommentSection = document.getElementById('faultCommentSection');
+    const faultComment = document.getElementById('faultComment');
+
+    function updateFaultCommentVisibility(){
+      const show = faultClearedYes.checked;
+      faultCommentSection.classList.toggle('visible', show);
+      faultComment.required = show;
+    }
+    faultClearedYes.addEventListener('change', updateFaultCommentVisibility);
+    faultClearedNo.addEventListener('change', updateFaultCommentVisibility);
+
+    const driveableYes = document.getElementById('driveableYes');
+    const driveableNo = document.getElementById('driveableNo');
+    const locationSection = document.getElementById('locationSection');
+    const carLocation = document.getElementById('carLocation');
+
+    function updateLocationVisibility(){
+      const show = driveableNo.checked;
+      locationSection.classList.toggle('visible', show);
+      carLocation.required = show;
+    }
+    driveableYes.addEventListener('change', updateLocationVisibility);
+    driveableNo.addEventListener('change', updateLocationVisibility);
+
+    // ========== GOOGLE MAPS ADDRESS VALIDATION ==========
+    const addressStatus = document.getElementById('addressStatus');
+    const carLocationValidated = document.getElementById('carLocationValidated');
+    let addressTimeout = null;
+
+    carLocation.addEventListener('input', function(){
+      clearTimeout(addressTimeout);
+      const addr = this.value.trim();
+      
+      if(addr.length < 5){
+        addressStatus.textContent = '';
+        addressStatus.className = 'address-status';
+        carLocationValidated.value = '';
+        return;
+      }
+      
+      addressStatus.textContent = '⏳ Adresse wird geprüft...';
+      addressStatus.className = 'address-status checking';
+      
+      addressTimeout = setTimeout(async () => {
+        try {
+          const apiKey = 'AIzaSyAz5_nA5tRVwSH2KX7ob0uO1CfnA_mE5LI';
+          const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addr)}&key=${apiKey}&language=de`);
+          const data = await response.json();
+          
+          if(data.status === 'OK' && data.results && data.results.length > 0){
+            const result = data.results[0];
+            addressStatus.textContent = '✅ ' + result.formatted_address;
+            addressStatus.className = 'address-status valid';
+            carLocationValidated.value = result.formatted_address;
+          } else {
+            addressStatus.textContent = '⚠️ Adresse nicht gefunden. Bitte prüfen.';
+            addressStatus.className = 'address-status invalid';
+            carLocationValidated.value = '';
+          }
+        } catch(e){
+          addressStatus.textContent = '⚠️ Adressprüfung fehlgeschlagen.';
+          addressStatus.className = 'address-status invalid';
+          carLocationValidated.value = '';
+        }
+      }, 800);
+    });
+
+    // ========== PHOTO HANDLING ==========
+    // Sketch photo
+    const sketchInput = document.getElementById('sketch');
+    const sketchPrev = document.getElementById('sketch_prev');
+    
+    sketchPrev.addEventListener('click', () => sketchInput.click());
+    
+    sketchInput.addEventListener('change', async function(){
+      const img = sketchPrev.querySelector('img');
+      const hint = sketchPrev.querySelector('.hint');
+      
+      if(!this.files || this.files.length === 0){
+        img.style.display = 'none';
+        hint.style.display = 'block';
+        this.dataset.dataurl = '';
+        return;
+      }
+      
+      const dataUrl = await readFileAsDataURL(this.files[0]);
+      this.dataset.dataurl = dataUrl;
+      img.src = dataUrl;
+      img.style.display = 'block';
+      hint.style.display = 'none';
+    });
+
+    // Damage photos (multi)
+    const damagePhotoInput = document.getElementById('damagePhotoInput');
+    const damageThumbs = document.getElementById('damageThumbs');
+    const damagePhotosStore = document.getElementById('damagePhotosStore');
+    
+    document.getElementById('btnAddDamagePhoto').addEventListener('click', () => damagePhotoInput.click());
+    document.getElementById('btnClearDamagePhotos').addEventListener('click', () => {
+      damagePhotosStore.value = '[]';
+      damagePhotoInput.value = '';
+      renderDamageThumbs();
+    });
+
+    damagePhotoInput.addEventListener('change', async function(){
+      if(!this.files || this.files.length === 0) return;
+      const dataUrl = await readFileAsDataURL(this.files[0]);
+      
+      const arr = JSON.parse(damagePhotosStore.value || '[]');
+      arr.push(dataUrl);
+      damagePhotosStore.value = JSON.stringify(arr);
+      this.value = '';
+      renderDamageThumbs();
+    });
+
+    function renderDamageThumbs(){
+      const arr = JSON.parse(damagePhotosStore.value || '[]');
+      damageThumbs.innerHTML = '';
+      arr.forEach((dataUrl, idx) => {
+        const div = document.createElement('div');
+        div.className = 'thumb';
+        div.innerHTML = `<img src="${dataUrl}" alt="Schadenfoto"><button type="button" title="Entfernen">×</button>`;
+        div.querySelector('button').addEventListener('click', () => {
+          const a = JSON.parse(damagePhotosStore.value || '[]');
+          a.splice(idx, 1);
+          damagePhotosStore.value = JSON.stringify(a);
+          renderDamageThumbs();
+        });
+        damageThumbs.appendChild(div);
+      });
+    }
+
+    // Pflichtfotos
+    const photoRequirements = [
+      { id: 'photo_front', title: 'Front', hint: 'Ansicht von vorne', required: true },
+      { id: 'photo_rear', title: 'Heck', hint: 'Ansicht von hinten', required: true },
+      { id: 'photo_left', title: 'Linke Seite', hint: 'Fahrertür-Seite', required: true },
+      { id: 'photo_right', title: 'Rechte Seite', hint: 'Beifahrer-Seite', required: true },
+      { id: 'photo_damage1', title: 'Schaden Detail 1', hint: 'Nahaufnahme Schaden', required: true },
+      { id: 'photo_damage2', title: 'Schaden Detail 2', hint: 'Weiterer Winkel', required: false },
+      { id: 'photo_tacho', title: 'Tacho', hint: 'Kilometerstand', required: true },
+    ];
+
+    function createPhotoCard(req){
+      const div = document.createElement('div');
+      div.className = 'photo-card';
+      div.innerHTML = `
+        <div class="preview" id="${req.id}_prev">
+          <img alt="${req.title}">
+          <span class="hint">Klicken zum Aufnehmen</span>
+        </div>
+        <div class="meta">
+          <strong>${req.title}${req.required ? ' *' : ''}</strong>
+          <span>${req.hint}</span>
+        </div>
+        <input type="file" id="${req.id}" accept="image/*" capture="environment" ${req.required ? 'required' : ''}>
+      `;
+      
+      const prev = div.querySelector('.preview');
+      const input = div.querySelector('input');
+      
+      prev.addEventListener('click', () => input.click());
+      
+      input.addEventListener('change', async function(){
+        const img = prev.querySelector('img');
+        const hint = prev.querySelector('.hint');
+        
+        if(!this.files || this.files.length === 0){
+          img.style.display = 'none';
+          hint.style.display = 'block';
+          this.dataset.dataurl = '';
+          return;
+        }
+        
+        const dataUrl = await readFileAsDataURL(this.files[0]);
+        this.dataset.dataurl = dataUrl;
+        img.src = dataUrl;
+        img.style.display = 'block';
+        hint.style.display = 'none';
+      });
+      
+      return div;
+    }
+
+    const photoGrid = document.getElementById('photoGrid');
+    photoRequirements.forEach(req => {
+      photoGrid.appendChild(createPhotoCard(req));
+    });
+
+    // ========== FORM VALIDATION & SUBMISSION ==========
+    const msgEl = document.getElementById('messages');
+
+    function showMsg(text, type = 'muted'){
+      msgEl.textContent = text;
+      msgEl.className = `msg ${type}`;
+    }
+
+    function validateForm(){
+      // Required fields
+      const requiredFields = ['date', 'time', 'location', 'employee', 'plate', 'model', 'mileage', 'faultType'];
+      for(const id of requiredFields){
+        const el = document.getElementById(id);
+        if(!el.value.trim()){
+          showMsg(`Bitte "${el.previousElementSibling?.textContent || id}" ausfüllen.`, 'error');
+          el.focus();
+          return false;
+        }
+      }
+
+      // Radio buttons
+      if(!document.querySelector('input[name="police"]:checked')){
+        showMsg('Bitte angeben ob Polizei hinzugezogen wurde.', 'error');
+        return false;
+      }
+      if(!document.querySelector('input[name="faultCleared"]:checked')){
+        showMsg('Bitte angeben ob Schuldfrage geklärt ist.', 'error');
+        return false;
+      }
+      if(!document.querySelector('input[name="driveable"]:checked')){
+        showMsg('Bitte angeben ob Fahrzeug fahrbereit ist.', 'error');
+        return false;
+      }
+
+      // Conditional: fault comment
+      if(faultClearedYes.checked && !faultComment.value.trim()){
+        showMsg('Bitte Erklärung zur Schuldfrage angeben.', 'error');
+        faultComment.focus();
+        return false;
+      }
+
+      // Conditional: car location
+      if(driveableNo.checked && !carLocation.value.trim()){
+        showMsg('Bitte Standort des Fahrzeugs angeben.', 'error');
+        carLocation.focus();
+        return false;
+      }
+
+      // Damage photos (at least 1)
+      const damagePhotos = JSON.parse(damagePhotosStore.value || '[]');
+      if(damagePhotos.length === 0){
+        showMsg('Bitte mindestens ein Schadensfoto hinzufügen.', 'error');
+        return false;
+      }
+
+      // Required photos
+      for(const req of photoRequirements){
+        if(req.required){
+          const input = document.getElementById(req.id);
+          if(!input.dataset.dataurl){
+            showMsg(`Bitte Pflichtfoto "${req.title}" aufnehmen.`, 'error');
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
+
+    function collectData(){
+      const data = {
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        location: document.getElementById('location').value,
+        employee: document.getElementById('employee').value,
+        employeeEmail: document.getElementById('employeeEmail').value,
+        plate: document.getElementById('plate').value.toUpperCase(),
+        model: document.getElementById('model').value,
+        mileage: document.getElementById('mileage').value,
+        faultType: document.getElementById('faultType').value,
+        police: document.querySelector('input[name="police"]:checked')?.value,
+        faultCleared: document.querySelector('input[name="faultCleared"]:checked')?.value,
+        faultComment: faultComment.value,
+        sketch: sketchInput.dataset.dataurl || null,
+        damagePhotos: JSON.parse(damagePhotosStore.value || '[]'),
+        driveable: document.querySelector('input[name="driveable"]:checked')?.value,
+        carLocation: carLocation.value,
+        carLocationValidated: carLocationValidated.value,
+        additionalNotes: document.getElementById('additionalNotes').value,
+        photos: []
+      };
+
+      for(const req of photoRequirements){
+        const input = document.getElementById(req.id);
+        if(input.dataset.dataurl){
+          data.photos.push({
+            title: req.title,
+            hint: req.hint,
+            dataUrl: input.dataset.dataurl
+          });
+        }
+      }
+
+      return data;
+    }
+
+    // Send button
+    document.getElementById('btnSend').addEventListener('click', async () => {
+      if(!validateForm()) return;
+
+      const data = collectData();
+      showMsg('⏳ Wird gesendet...', 'muted');
+
+      try {
+        const response = await fetch('http://89.167.23.45:8086/webhook/schadensprotokoll', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if(response.ok){
+          showMsg('✅ Schadensprotokoll erfolgreich gesendet!', 'success');
+        } else {
+          throw new Error('Server-Fehler');
+        }
+      } catch(e){
+        showMsg('❌ Fehler beim Senden. Bitte erneut versuchen oder PDF speichern.', 'error');
+      }
+    });
+
+    // Print button
+    document.getElementById('btnPrint').addEventListener('click', () => {
+      if(!validateForm()) return;
+      const data = collectData();
+      openPrintPreview(data);
+    });
+
+    // Reset button
+    document.getElementById('btnReset').addEventListener('click', () => {
+      if(confirm('Wirklich alle Eingaben löschen?')){
+        location.reload();
+      }
+    });
+
+    // ========== PRINT PREVIEW ==========
+    function escapeHtml(str){
+      if(!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function openPrintPreview(data){
+      const faultTypeLabels = {
+        'eigen': 'Eigenverschulden',
+        'fremd': 'Fremdverschulden',
+        'unbekannt': 'Unbekannt',
+        'mehrfach': 'Mehrfachauswahl / Unklar'
+      };
+
+      const photoGridHtml = data.photos.map(p => `
+        <div style="border:1px solid #ddd; border-radius:12px; padding:10px;">
+          <div style="font-weight:700; font-size:12px;">${escapeHtml(p.title)}</div>
+          <div style="color:#555; font-size:11px; margin-bottom:6px;">${escapeHtml(p.hint)}</div>
+          <img src="${p.dataUrl}" alt="${escapeHtml(p.title)}" style="width:100%; height:350px; object-fit:cover; border:1px solid #ccc; border-radius:10px;">
+        </div>
+      `).join('');
+
+      const damagePhotosHtml = data.damagePhotos.map((p, i) => `
+        <img src="${p}" alt="Schadenfoto ${i+1}" style="width:100%; max-width:400px; height:auto; border:1px solid #ccc; border-radius:10px; margin:4px;">
+      `).join('');
+
+      const almasLogoBase64 = "data:image/jpeg;base64,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";
+
+      const html = `
+      <!doctype html>
+      <html lang="de">
+      <head>
+        <meta charset="utf-8">
+        <title>Schadensprotokoll - ${escapeHtml(data.plate)}</title>
+        <style>
+          body{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin: 0; padding: 18px; color:#111; }
+          .header{ display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:3px solid #c8102e; margin-bottom:16px; }
+          .header img{ height:50px; }
+          h1{ margin:0 0 6px; font-size: 18px; color:#c8102e; }
+          .sub{ color:#444; font-size: 12px; margin-bottom: 12px; }
+          .box{ border:1px solid #ddd; border-radius:12px; padding: 12px; margin-bottom: 12px; }
+          .box-title{ font-weight:800; margin-bottom:8px; color:#c8102e; border-bottom:2px solid #c8102e; padding-bottom:4px; }
+          .grid{ display:grid; grid-template-columns: repeat(12, 1fr); gap:10px; }
+          .kv{ font-size: 12px; }
+          .k{ color:#555; font-size: 11px; }
+          .v{ font-weight: 650; }
+          .photo-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; }
+          .no-print{ margin-bottom: 12px; }
+          .btn{ border:1px solid #c8102e; background:#fff; color:#c8102e; padding: 10px 12px; border-radius: 12px; font-weight: 650; cursor:pointer; }
+          .footer{ margin-top:20px; padding-top:12px; border-top:2px solid #c8102e; text-align:center; font-size:11px; color:#555; }
+          @media print{ .no-print{ display:none; } body{ margin:0; padding:12px; } }
+        </style>
+      </head>
+      <body>
+        <div class="no-print">
+          <button class="btn" onclick="window.print()">🖨️ Drucken / als PDF speichern</button>
+        </div>
+
+        <div class="header">
+          <img src="${almasLogoBase64}" alt="ALMAS INDUSTRIES">
+          <div style="text-align:right;">
+            <h1>Schadensprotokoll</h1>
+            <div class="sub">${escapeHtml(data.date)} um ${escapeHtml(data.time)}<br>Ort: ${escapeHtml(data.location)}</div>
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="grid">
+            <div class="kv" style="grid-column: span 6;"><div class="k">Fahrer/Mitarbeiter</div><div class="v">${escapeHtml(data.employee)}</div></div>
+            <div class="kv" style="grid-column: span 6;"><div class="k">E-Mail</div><div class="v">${escapeHtml(data.employeeEmail || "-")}</div></div>
+            <div class="kv" style="grid-column: span 4;"><div class="k">Kennzeichen</div><div class="v">${escapeHtml(data.plate)}</div></div>
+            <div class="kv" style="grid-column: span 4;"><div class="k">Marke/Modell</div><div class="v">${escapeHtml(data.model)}</div></div>
+            <div class="kv" style="grid-column: span 4;"><div class="k">Kilometerstand</div><div class="v">${escapeHtml(data.mileage)} km</div></div>
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="box-title">Schadenshergang</div>
+          <div class="grid">
+            <div class="kv" style="grid-column: span 4;"><div class="k">Verschulden</div><div class="v">${escapeHtml(faultTypeLabels[data.faultType] || data.faultType)}</div></div>
+            <div class="kv" style="grid-column: span 4;"><div class="k">Polizei hinzugezogen</div><div class="v">${data.police === 'ja' ? 'Ja' : 'Nein'}</div></div>
+            <div class="kv" style="grid-column: span 4;"><div class="k">Schuldfrage geklärt</div><div class="v">${data.faultCleared === 'ja' ? 'Ja' : 'Nein'}</div></div>
+            ${data.faultCleared === 'ja' ? `<div class="kv" style="grid-column: span 12;"><div class="k">Erklärung Schuldfrage</div><div class="v" style="font-weight:500;">${escapeHtml(data.faultComment)}</div></div>` : ''}
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="box-title">Fahrzeugzustand</div>
+          <div class="grid">
+            <div class="kv" style="grid-column: span 6;"><div class="k">Fahrbereit</div><div class="v">${data.driveable === 'ja' ? 'Ja' : 'Nein'}</div></div>
+            ${data.driveable === 'nein' ? `<div class="kv" style="grid-column: span 6;"><div class="k">Standort</div><div class="v">${escapeHtml(data.carLocationValidated || data.carLocation)}</div></div>` : ''}
+            ${data.additionalNotes ? `<div class="kv" style="grid-column: span 12;"><div class="k">Zusätzliche Bemerkungen</div><div class="v" style="font-weight:500;">${escapeHtml(data.additionalNotes)}</div></div>` : ''}
+          </div>
+        </div>
+
+        ${data.sketch ? `
+        <div class="box">
+          <div class="box-title">Unfallskizze</div>
+          <img src="${data.sketch}" alt="Unfallskizze" style="max-width:100%; max-height:400px; border:1px solid #ccc; border-radius:10px;">
+        </div>
+        ` : ''}
+
+        <div class="box">
+          <div class="box-title">Schadensfotos</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            ${damagePhotosHtml}
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="box-title">Pflichtfotos</div>
+          <div class="photo-grid">${photoGridHtml}</div>
+        </div>
+
+        <div class="footer">
+          <strong>ALMAS INDUSTRIES AG</strong><br>
+          Floßwörthstraße 57 | D-68199 Mannheim<br>
+          Tel.: +49 (0) 621 / 842 528 – 0 | www.totmann-schalter.de
+        </div>
+      </body>
+      </html>
+      `;
+
+      const win = window.open('', '_blank');
+      win.document.write(html);
+      win.document.close();
+    }
+
+    // ========== INIT ==========
+    // Set today's date
+    document.getElementById('date').valueAsDate = new Date();
+  </script>
+</body>
+</html>
