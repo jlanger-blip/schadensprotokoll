@@ -149,6 +149,13 @@
     .msg.error{ background: #f8d7da; color: #721c24; }
     .msg.muted{ background: var(--bg); color: var(--muted); }
     .row{ display: flex; flex-wrap: wrap; align-items: center; }
+    .button-row{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
 
     /* Checkbox/Radio styling */
     .checkbox-group{
@@ -304,9 +311,14 @@
 
     @media (max-width: 768px){
       .card{ padding: 14px; }
-      .row{ flex-direction: column; align-items: stretch !important; }
+      .row{ flex-direction: column; align-items: stretch !important; gap: 8px !important; }
       .row .btn{ width: 100%; justify-content: center; }
+      .button-row{ flex-direction: column; }
+      .button-row .btn{ width: 100%; justify-content: center; }
+      .button-row .muted{ text-align: center; margin-top: 4px; }
       header{ flex-direction: column; align-items: flex-start; }
+      body{ overflow-x: hidden; }
+      .wrap{ overflow-x: hidden; }
     }
     @media print{
       body{ background:#fff; color:#000; }
@@ -336,12 +348,10 @@
     </header>
 
     <div class="card">
-      <div class="row no-print" style="justify-content:space-between; gap:12px;">
-        <div class="row" style="gap:8px;">
-          <button class="btn primary" id="btnSend" type="button">Senden</button>
-          <button class="btn" id="btnPrint" type="button">Druckansicht / PDF</button>
-          <button class="btn" id="btnReset" type="button">Alles zurücksetzen</button>
-        </div>
+      <div class="button-row no-print">
+        <button class="btn primary" id="btnSend" type="button">Senden</button>
+        <button class="btn" id="btnPrint" type="button">Druckansicht / PDF</button>
+        <button class="btn" id="btnReset" type="button">Alles zurücksetzen</button>
         <span class="muted" style="font-size:12px;">Version 1.0</span>
       </div>
 
