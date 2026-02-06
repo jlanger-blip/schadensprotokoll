@@ -366,20 +366,20 @@
       <div class="grid">
         <div class="field" style="grid-column: span 4;">
           <label for="date">Datum des Schadens *</label>
-          <input id="date" type="date" required>
+          <input id="date" type="date"><!-- required DEAKTIVIERT -->
         </div>
         <div class="field" style="grid-column: span 4;">
           <label for="time">Uhrzeit (ca.) *</label>
-          <input id="time" type="time" required>
+          <input id="time" type="time"><!-- required DEAKTIVIERT -->
         </div>
         <div class="field" style="grid-column: span 4;">
           <label for="location">Ort des Schadens *</label>
-          <input id="location" type="text" placeholder="z.B. Parkplatz Supermarkt Mannheim" required>
+          <input id="location" type="text" placeholder="z.B. Parkplatz Supermarkt Mannheim"><!-- required DEAKTIVIERT -->
         </div>
 
         <div class="field" style="grid-column: span 6;">
           <label for="employee">Fahrer / Mitarbeiter *</label>
-          <input id="employee" type="text" placeholder="Vorname Nachname" required>
+          <input id="employee" type="text" placeholder="Vorname Nachname"><!-- required DEAKTIVIERT -->
         </div>
         <div class="field" style="grid-column: span 6;">
           <label for="employeeEmail">E-Mail Mitarbeiter</label>
@@ -398,15 +398,15 @@
       <div class="grid">
         <div class="field" style="grid-column: span 4;">
           <label for="plate">Kennzeichen *</label>
-          <input id="plate" type="text" placeholder="z.B. MA-AI 123" required>
+          <input id="plate" type="text" placeholder="z.B. MA-AI 123"><!-- required DEAKTIVIERT -->
         </div>
         <div class="field" style="grid-column: span 4;">
           <label for="model">Marke / Modell *</label>
-          <input id="model" type="text" placeholder="z.B. VW Golf" required>
+          <input id="model" type="text" placeholder="z.B. VW Golf"><!-- required DEAKTIVIERT -->
         </div>
         <div class="field" style="grid-column: span 4;">
           <label for="mileage">Kilometerstand (km) *</label>
-          <input id="mileage" type="number" min="0" step="1" placeholder="z.B. 54210" required>
+          <input id="mileage" type="number" min="0" step="1" placeholder="z.B. 54210"><!-- required DEAKTIVIERT -->
         </div>
       </div>
 
@@ -421,7 +421,7 @@
       <div class="grid">
         <div class="field" style="grid-column: span 6;">
           <label for="faultType">Art des Verschuldens *</label>
-          <select id="faultType" required>
+          <select id="faultType"><!-- required DEAKTIVIERT -->
             <option value="">Bitte auswählen ...</option>
             <option value="eigen">Eigenverschulden</option>
             <option value="fremd">Fremdverschulden</option>
@@ -433,7 +433,7 @@
         <div class="field" style="grid-column: span 6;">
           <label>Polizei hinzugezogen? *</label>
           <div class="checkbox-group">
-            <label><input type="radio" name="police" value="ja" required> Ja</label>
+            <label><input type="radio" name="police" value="ja"><!-- required DEAKTIVIERT --> Ja</label>
             <label><input type="radio" name="police" value="nein"> Nein</label>
           </div>
         </div>
@@ -441,7 +441,7 @@
         <div class="field" style="grid-column: span 12;">
           <label>Schuldfrage geklärt? *</label>
           <div class="checkbox-group">
-            <label><input type="radio" name="faultCleared" value="ja" id="faultClearedYes" required> Ja</label>
+            <label><input type="radio" name="faultCleared" value="ja" id="faultClearedYes"><!-- required DEAKTIVIERT --> Ja</label>
             <label><input type="radio" name="faultCleared" value="nein" id="faultClearedNo"> Nein</label>
           </div>
           
@@ -500,7 +500,7 @@
         <div class="field" style="grid-column: span 12;">
           <label>Fahrzeug fahrbereit? *</label>
           <div class="checkbox-group">
-            <label><input type="radio" name="driveable" value="ja" id="driveableYes" required> Ja</label>
+            <label><input type="radio" name="driveable" value="ja" id="driveableYes"><!-- required DEAKTIVIERT --> Ja</label>
             <label><input type="radio" name="driveable" value="nein" id="driveableNo"> Nein</label>
           </div>
           
@@ -659,13 +659,13 @@
 
     // Pflichtfotos
     const photoRequirements = [
-      { id: 'photo_front', title: 'Front', hint: 'Ansicht von vorne', required: true },
-      { id: 'photo_rear', title: 'Heck', hint: 'Ansicht von hinten', required: true },
-      { id: 'photo_left', title: 'Linke Seite', hint: 'Fahrertür-Seite', required: true },
-      { id: 'photo_right', title: 'Rechte Seite', hint: 'Beifahrer-Seite', required: true },
-      { id: 'photo_damage1', title: 'Schaden Detail 1', hint: 'Nahaufnahme Schaden', required: true },
+      { id: 'photo_front', title: 'Front', hint: 'Ansicht von vorne', required: false }// WAS: true,
+      { id: 'photo_rear', title: 'Heck', hint: 'Ansicht von hinten', required: false }// WAS: true,
+      { id: 'photo_left', title: 'Linke Seite', hint: 'Fahrertür-Seite', required: false }// WAS: true,
+      { id: 'photo_right', title: 'Rechte Seite', hint: 'Beifahrer-Seite', required: false }// WAS: true,
+      { id: 'photo_damage1', title: 'Schaden Detail 1', hint: 'Nahaufnahme Schaden', required: false }// WAS: true,
       { id: 'photo_damage2', title: 'Schaden Detail 2', hint: 'Weiterer Winkel', required: false },
-      { id: 'photo_tacho', title: 'Tacho', hint: 'Kilometerstand', required: true },
+      { id: 'photo_tacho', title: 'Tacho', hint: 'Kilometerstand', required: false }// WAS: true,
     ];
 
     function createPhotoCard(req){
@@ -723,6 +723,13 @@
     }
 
     function validateForm(){
+      // =====================================
+      // PFLICHTFELDER DEAKTIVIERT FÜR TESTS
+      // Siehe PFLICHTFELDER.md für Original
+      // =====================================
+      return true;
+      
+      /* ORIGINAL VALIDATION - AUSKOMMENTIERT
       // Required fields
       const requiredFields = ['date', 'time', 'location', 'employee', 'plate', 'model', 'mileage', 'faultType'];
       for(const id of requiredFields){
@@ -780,6 +787,7 @@
       }
 
       return true;
+      */
     }
 
     function collectData(){
