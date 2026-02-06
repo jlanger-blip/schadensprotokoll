@@ -826,7 +826,7 @@
       showMsg('⏳ Wird gesendet...', 'muted');
 
       try {
-        const response = await fetch('http://89.167.23.45:8086/webhook/schadensprotokoll', {
+        const response = await fetch('https://webhook.dokumente-almas.de/schadensanzeige', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
