@@ -617,7 +617,7 @@
     function updateFaultCommentVisibility(){
       const show = faultClearedYes.checked;
       faultCommentSection.classList.toggle('visible', show);
-      faultComment.required = show;
+      // faultComment.required = show; // DEAKTIVIERT
     }
     faultClearedYes.addEventListener('change', updateFaultCommentVisibility);
     faultClearedNo.addEventListener('change', updateFaultCommentVisibility);
@@ -630,7 +630,7 @@
     function updateLocationVisibility(){
       const show = driveableNo.checked;
       locationSection.classList.toggle('visible', show);
-      carLocation.required = show;
+      // carLocation.required = show; // DEAKTIVIERT
     }
     driveableYes.addEventListener('change', updateLocationVisibility);
     driveableNo.addEventListener('change', updateLocationVisibility);
