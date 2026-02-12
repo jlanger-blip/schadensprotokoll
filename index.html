@@ -441,6 +441,18 @@
           </div>
           
           <div class="conditional-field" id="policeDetailsSection" style="display: none; margin-top: 1rem;">
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 0.5rem;">Bitte entweder Foto des Polizeiberichts hochladen <strong>oder</strong> Dienststelle/Aktenzeichen eintragen:</p>
+            
+            <div class="field" style="margin-bottom: 1rem;">
+              <label>Foto Polizeibericht (optional)</label>
+              <div class="photo-card" style="height: 120px;">
+                <div class="preview" id="policeReport_prev" style="height: 100%;"></div>
+                <input type="file" accept="image/*" capture="environment" id="policeReport" style="display:none;">
+              </div>
+            </div>
+            
+            <p style="color: #666; font-size: 0.85em; text-align: center; margin: 0.5rem 0;">— oder —</p>
+            
             <div class="grid" style="gap: 1rem;">
               <div class="field" style="grid-column: span 6;">
                 <label for="policeStation">Polizeidienststelle</label>
@@ -559,9 +571,24 @@
 
       <div class="divider"></div>
 
-      <!-- ABSCHNITT 7: Unterschrift -->
+      <!-- ABSCHNITT 7: Bemerkungen -->
       <div class="section-title">
-        <h2>7) Unterschrift</h2>
+        <h2>7) Bemerkungen</h2>
+        <p>Zusätzliche Anmerkungen zum Schadensfall.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field" style="grid-column: span 12;">
+          <label for="remarks">Bemerkungen (optional)</label>
+          <textarea id="remarks" rows="4" placeholder="Weitere Informationen, die für die Schadensbearbeitung relevant sein könnten..."></textarea>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ABSCHNITT 8: Unterschrift -->
+      <div class="section-title">
+        <h2>8) Unterschrift</h2>
         <p>Bitte mit Finger oder Stift unterschreiben.</p>
       </div>
 
@@ -698,6 +725,22 @@
     driveableNo.addEventListener('change', updateLocationVisibility);
 
     // ========== PHOTO HANDLING ==========
+    
+    // Police report photo
+    const policeReportInput = document.getElementById('policeReport');
+    const policeReportPrev = document.getElementById('policeReport_prev');
+    policeReportPrev.addEventListener('click', () => policeReportInput.click());
+    policeReportInput.addEventListener('change', async function(){
+      if(this.files && this.files[0]){
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          policeReportPrev.style.backgroundImage = `url(${e.target.result})`;
+          policeReportInput.dataset.dataurl = e.target.result;
+        };
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+    
     // Sketch photo
     const sketchInput = document.getElementById('sketch');
     const sketchPrev = document.getElementById('sketch_prev');
@@ -804,6 +847,15 @@
         showMsg('Bitte angeben ob Polizei hinzugezogen wurde.', 'error');
         return false;
       }
+      // Bei Polizei Ja: entweder Foto ODER Textfelder
+      if(policeYes.checked){
+        const hasPhoto = policeReportInput.dataset.dataurl;
+        const hasText = document.getElementById('policeStation').value.trim() || document.getElementById('policeFileNumber').value.trim();
+        if(!hasPhoto && !hasText){
+          showMsg('Bitte entweder Foto des Polizeiberichts hochladen oder Dienststelle/Aktenzeichen eintragen.', 'error');
+          return false;
+        }
+      }
       if(!document.querySelector('input[name="faultCleared"]:checked')){
         showMsg('Bitte angeben ob Schuldfrage geklärt ist.', 'error');
         return false;
@@ -859,6 +911,7 @@
         mileage: document.getElementById('mileage').value,
         faultType: document.getElementById('faultType').value,
         police: document.querySelector('input[name="police"]:checked')?.value,
+        policeReport: policeReportInput.dataset.dataurl || null,
         policeStation: document.getElementById('policeStation')?.value || '',
         policeFileNumber: document.getElementById('policeFileNumber')?.value || '',
         otherParty: document.querySelector('input[name="otherParty"]:checked')?.value || 'nein',
@@ -871,6 +924,7 @@
         driveable: document.querySelector('input[name="driveable"]:checked')?.value,
         carLocation: carLocation.value,
         additionalNotes: document.getElementById('additionalNotes').value,
+        remarks: document.getElementById('remarks')?.value || '',
         signature: sigData.value,
         photos: []
       };
@@ -1004,6 +1058,7 @@
           <div class="grid">
             <div class="kv" style="grid-column: span 4;"><div class="k">Verschulden</div><div class="v">${escapeHtml(faultTypeLabels[data.faultType] || data.faultType)}</div></div>
             <div class="kv" style="grid-column: span 4;"><div class="k">Polizei hinzugezogen</div><div class="v">${data.police === 'ja' ? 'Ja' : 'Nein'}</div></div>
+            ${data.police === 'ja' && data.policeReport ? `<div class="kv" style="grid-column: span 12;"><div class="k">Polizeibericht</div><div class="v"><img src="${data.policeReport}" style="max-width:300px;max-height:200px;border:1px solid #ccc;"></div></div>` : ''}
             ${data.police === 'ja' && data.policeStation ? `<div class="kv" style="grid-column: span 6;"><div class="k">Polizeidienststelle</div><div class="v">${escapeHtml(data.policeStation)}</div></div>` : ''}
             ${data.police === 'ja' && data.policeFileNumber ? `<div class="kv" style="grid-column: span 6;"><div class="k">Aktenzeichen</div><div class="v">${escapeHtml(data.policeFileNumber)}</div></div>` : ''}
             <div class="kv" style="grid-column: span 4;"><div class="k">Andere Partei beteiligt</div><div class="v">${data.otherParty === 'ja' ? 'Ja' : 'Nein'}</div></div>
@@ -1037,6 +1092,13 @@
           <div class="box-title">Pflichtfotos</div>
           <div class="photo-grid">${photoGridHtml}</div>
         </div>
+
+        ${data.remarks ? `
+        <div class="box">
+          <div class="box-title">Bemerkungen</div>
+          <div style="white-space: pre-wrap;">${escapeHtml(data.remarks)}</div>
+        </div>
+        ` : ''}
 
         <div class="box">
           <div class="box-title">Unterschrift Fahrer/Mitarbeiter</div>
