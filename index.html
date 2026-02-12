@@ -436,8 +436,46 @@
         <div class="field" style="grid-column: span 6;">
           <label>Polizei hinzugezogen? *</label>
           <div class="checkbox-group">
-            <label><input type="radio" name="police" value="ja" required> Ja</label>
-            <label><input type="radio" name="police" value="nein"> Nein</label>
+            <label><input type="radio" name="police" value="ja" id="policeYes" required> Ja</label>
+            <label><input type="radio" name="police" value="nein" id="policeNo"> Nein</label>
+          </div>
+          
+          <div class="conditional-field" id="policeDetailsSection" style="display: none; margin-top: 1rem;">
+            <div class="grid" style="gap: 1rem;">
+              <div class="field" style="grid-column: span 6;">
+                <label for="policeStation">Polizeidienststelle</label>
+                <input type="text" id="policeStation" placeholder="z.B. Polizeirevier Mannheim-Neckarstadt">
+              </div>
+              <div class="field" style="grid-column: span 6;">
+                <label for="policeFileNumber">Aktenzeichen</label>
+                <input type="text" id="policeFileNumber" placeholder="z.B. 123/456/2026">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field" style="grid-column: span 6;">
+          <label>Beteiligung einer anderen Partei?</label>
+          <div class="checkbox-group">
+            <label><input type="radio" name="otherParty" value="ja" id="otherPartyYes"> Ja</label>
+            <label><input type="radio" name="otherParty" value="nein" id="otherPartyNo" checked> Nein</label>
+          </div>
+          
+          <div class="conditional-field" id="otherPartySection" style="display: none; margin-top: 1rem;">
+            <div class="grid" style="gap: 1rem;">
+              <div class="field" style="grid-column: span 12;">
+                <label for="otherPartyName">Unfallgegner (Name, Adresse)</label>
+                <input type="text" id="otherPartyName" placeholder="z.B. Max Mustermann, Musterstr. 1, 12345 Musterstadt">
+              </div>
+              <div class="field" style="grid-column: span 6;">
+                <label for="otherPartyPlate">Kennzeichen</label>
+                <input type="text" id="otherPartyPlate" placeholder="z.B. MA-AB 1234">
+              </div>
+              <div class="field" style="grid-column: span 6;">
+                <label for="otherPartyInsurance">Versicherung (Unternehmen, Policennummer)</label>
+                <input type="text" id="otherPartyInsurance" placeholder="z.B. Allianz, P-123456789">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -622,6 +660,30 @@
     faultClearedYes.addEventListener('change', updateFaultCommentVisibility);
     faultClearedNo.addEventListener('change', updateFaultCommentVisibility);
 
+    // Police details toggle
+    const policeYes = document.getElementById('policeYes');
+    const policeNo = document.getElementById('policeNo');
+    const policeDetailsSection = document.getElementById('policeDetailsSection');
+    
+    function updatePoliceDetailsVisibility(){
+      const show = policeYes.checked;
+      policeDetailsSection.style.display = show ? 'block' : 'none';
+    }
+    policeYes.addEventListener('change', updatePoliceDetailsVisibility);
+    policeNo.addEventListener('change', updatePoliceDetailsVisibility);
+
+    // Other party details toggle
+    const otherPartyYes = document.getElementById('otherPartyYes');
+    const otherPartyNo = document.getElementById('otherPartyNo');
+    const otherPartySection = document.getElementById('otherPartySection');
+    
+    function updateOtherPartyVisibility(){
+      const show = otherPartyYes.checked;
+      otherPartySection.style.display = show ? 'block' : 'none';
+    }
+    otherPartyYes.addEventListener('change', updateOtherPartyVisibility);
+    otherPartyNo.addEventListener('change', updateOtherPartyVisibility);
+
     const driveableYes = document.getElementById('driveableYes');
     const driveableNo = document.getElementById('driveableNo');
     const locationSection = document.getElementById('locationSection');
@@ -797,6 +859,12 @@
         mileage: document.getElementById('mileage').value,
         faultType: document.getElementById('faultType').value,
         police: document.querySelector('input[name="police"]:checked')?.value,
+        policeStation: document.getElementById('policeStation')?.value || '',
+        policeFileNumber: document.getElementById('policeFileNumber')?.value || '',
+        otherParty: document.querySelector('input[name="otherParty"]:checked')?.value || 'nein',
+        otherPartyName: document.getElementById('otherPartyName')?.value || '',
+        otherPartyPlate: document.getElementById('otherPartyPlate')?.value || '',
+        otherPartyInsurance: document.getElementById('otherPartyInsurance')?.value || '',
         faultCleared: document.querySelector('input[name="faultCleared"]:checked')?.value,
         faultComment: faultComment.value,
         sketch: sketchInput.dataset.dataurl || null,
@@ -936,6 +1004,14 @@
           <div class="grid">
             <div class="kv" style="grid-column: span 4;"><div class="k">Verschulden</div><div class="v">${escapeHtml(faultTypeLabels[data.faultType] || data.faultType)}</div></div>
             <div class="kv" style="grid-column: span 4;"><div class="k">Polizei hinzugezogen</div><div class="v">${data.police === 'ja' ? 'Ja' : 'Nein'}</div></div>
+            ${data.police === 'ja' && data.policeStation ? `<div class="kv" style="grid-column: span 6;"><div class="k">Polizeidienststelle</div><div class="v">${escapeHtml(data.policeStation)}</div></div>` : ''}
+            ${data.police === 'ja' && data.policeFileNumber ? `<div class="kv" style="grid-column: span 6;"><div class="k">Aktenzeichen</div><div class="v">${escapeHtml(data.policeFileNumber)}</div></div>` : ''}
+            <div class="kv" style="grid-column: span 4;"><div class="k">Andere Partei beteiligt</div><div class="v">${data.otherParty === 'ja' ? 'Ja' : 'Nein'}</div></div>
+            ${data.otherParty === 'ja' ? `
+              <div class="kv" style="grid-column: span 12;"><div class="k">Unfallgegner</div><div class="v">${escapeHtml(data.otherPartyName)}</div></div>
+              <div class="kv" style="grid-column: span 6;"><div class="k">Kennzeichen</div><div class="v">${escapeHtml(data.otherPartyPlate)}</div></div>
+              <div class="kv" style="grid-column: span 6;"><div class="k">Versicherung</div><div class="v">${escapeHtml(data.otherPartyInsurance)}</div></div>
+            ` : ''}
             <div class="kv" style="grid-column: span 4;"><div class="k">Schuldfrage geklärt</div><div class="v">${data.faultCleared === 'ja' ? 'Ja' : 'Nein'}</div></div>
             ${data.faultCleared === 'ja' ? `<div class="kv" style="grid-column: span 12;"><div class="k">Erklärung Schuldfrage</div><div class="v" style="font-weight:500;">${escapeHtml(data.faultComment)}</div></div>` : ''}
           </div>
