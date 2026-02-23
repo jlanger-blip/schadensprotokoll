@@ -355,7 +355,7 @@
         <button class="btn primary" id="btnSend" type="button">Senden</button>
         <button class="btn" id="btnPrint" type="button">Druckansicht / PDF</button>
         <button class="btn" id="btnReset" type="button">Alles zurücksetzen</button>
-        <span class="muted" style="font-size:12px;">Version 1.0</span>
+        <span class="muted" style="font-size:12px;">Version 1.1</span>
       </div>
 
       <div id="messages" class="msg muted no-print" style="margin-top:12px; margin-bottom:12px;"></div>
@@ -586,9 +586,65 @@
 
       <div class="divider"></div>
 
-      <!-- ABSCHNITT 8: Unterschrift -->
+      <!-- ABSCHNITT 8: Polizeibericht -->
       <div class="section-title">
-        <h2>8) Unterschrift</h2>
+        <h2>8) Polizeibericht</h2>
+        <p>Polizeibericht als PDF oder Foto hochladen (Pflichtfeld).</p>
+      </div>
+
+      <div class="grid">
+        <div class="field" style="grid-column: span 12;">
+          <label>Polizeibericht hochladen (Pflicht) *</label>
+          <div class="photo-card" id="policeReportCard">
+            <div class="preview" id="policeReportMain_prev">
+              <img alt="Polizeibericht">
+              <span class="hint">Klicken zum Hochladen (PDF oder Bild)</span>
+            </div>
+            <div class="meta">
+              <strong>Polizeibericht *</strong>
+              <span>PDF oder Foto des Polizeiberichts</span>
+            </div>
+            <input type="file" id="policeReportMain" accept="image/*,application/pdf" class="file-hidden">
+          </div>
+          <div class="smallnote" id="policeReportMainFilename"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ABSCHNITT 9: Gegnerische Versicherung -->
+      <div class="section-title">
+        <h2>9) Gegnerische Versicherung</h2>
+        <p>Optional: Informationen zur gegnerischen Versicherung.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field" style="grid-column: span 12;">
+          <label>Foto gegnerische Versicherung (optional)</label>
+          <div class="photo-card" id="insurancePhotoCard">
+            <div class="preview" id="insurancePhoto_prev">
+              <img alt="Gegnerische Versicherung">
+              <span class="hint">Klicken zum Hochladen (optional)</span>
+            </div>
+            <div class="meta">
+              <strong>Versicherungsfoto</strong>
+              <span>Foto der gegnerischen Versicherungskarte o.ä.</span>
+            </div>
+            <input type="file" id="insurancePhoto" accept="image/*" capture="environment" class="file-hidden">
+          </div>
+          <div class="smallnote" id="insurancePhotoFilename"></div>
+        </div>
+        <div class="field" style="grid-column: span 12;">
+          <label for="insuranceData">Versicherungsdaten Gegner (optional)</label>
+          <textarea id="insuranceData" rows="3" placeholder="z.B. Allianz Versicherung, Policen-Nr. 123456789, Schadensnr. XYZ..."></textarea>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ABSCHNITT 10: Unterschrift -->
+      <div class="section-title">
+        <h2>10) Unterschrift</h2>
         <p>Bitte mit Finger oder Stift unterschreiben.</p>
       </div>
 
@@ -765,6 +821,60 @@
       hint.style.display = 'none';
     });
 
+    // Polizeibericht (Pflicht) - Section 8
+    const policeReportMainInput = document.getElementById('policeReportMain');
+    const policeReportMainPrev = document.getElementById('policeReportMain_prev');
+    const policeReportMainFilename = document.getElementById('policeReportMainFilename');
+    policeReportMainPrev.addEventListener('click', () => policeReportMainInput.click());
+    policeReportMainInput.addEventListener('change', async function(){
+      const img = policeReportMainPrev.querySelector('img');
+      const hint = policeReportMainPrev.querySelector('.hint');
+      if(!this.files || this.files.length === 0){
+        img.style.display = 'none';
+        hint.style.display = 'block';
+        this.dataset.dataurl = '';
+        policeReportMainFilename.textContent = '';
+        return;
+      }
+      const file = this.files[0];
+      policeReportMainFilename.textContent = '📎 ' + file.name;
+      const dataUrl = await readFileAsDataURL(file);
+      this.dataset.dataurl = dataUrl;
+      if(file.type && file.type.startsWith('image/')){
+        img.src = dataUrl;
+        img.style.display = 'block';
+        hint.style.display = 'none';
+      } else {
+        img.style.display = 'none';
+        hint.textContent = '✅ PDF hochgeladen: ' + file.name;
+        hint.style.display = 'block';
+      }
+    });
+
+    // Gegnerische Versicherung Foto (optional) - Section 9
+    const insurancePhotoInput = document.getElementById('insurancePhoto');
+    const insurancePhotoPrev = document.getElementById('insurancePhoto_prev');
+    const insurancePhotoFilename = document.getElementById('insurancePhotoFilename');
+    insurancePhotoPrev.addEventListener('click', () => insurancePhotoInput.click());
+    insurancePhotoInput.addEventListener('change', async function(){
+      const img = insurancePhotoPrev.querySelector('img');
+      const hint = insurancePhotoPrev.querySelector('.hint');
+      if(!this.files || this.files.length === 0){
+        img.style.display = 'none';
+        hint.style.display = 'block';
+        this.dataset.dataurl = '';
+        insurancePhotoFilename.textContent = '';
+        return;
+      }
+      const file = this.files[0];
+      insurancePhotoFilename.textContent = '📎 ' + file.name;
+      const dataUrl = await readFileAsDataURL(file);
+      this.dataset.dataurl = dataUrl;
+      img.src = dataUrl;
+      img.style.display = 'block';
+      hint.style.display = 'none';
+    });
+
     // Pflichtfotos
     const photoRequirements = [
       { id: 'photo_front', title: 'Front', hint: 'Ansicht von vorne', required: true },
@@ -890,6 +1000,12 @@
         }
       }
 
+      // Polizeibericht required
+      if(!policeReportMainInput.dataset.dataurl){
+        showMsg('Bitte Polizeibericht hochladen (Pflichtfeld).', 'error');
+        return false;
+      }
+
       // Signature required
       if(!sigData.value){
         showMsg('Bitte Unterschrift hinzufügen.', 'error');
@@ -925,6 +1041,9 @@
         carLocation: carLocation.value,
         additionalNotes: document.getElementById('additionalNotes').value,
         remarks: document.getElementById('remarks')?.value || '',
+        policeReportFile: policeReportMainInput.dataset.dataurl || null,
+        insurancePhoto: insurancePhotoInput.dataset.dataurl || null,
+        insuranceData: document.getElementById('insuranceData')?.value || '',
         signature: sigData.value,
         photos: []
       };
@@ -1097,6 +1216,23 @@
         <div class="box">
           <div class="box-title">Bemerkungen</div>
           <div style="white-space: pre-wrap;">${escapeHtml(data.remarks)}</div>
+        </div>
+        ` : ''}
+
+        ${data.policeReportFile ? `
+        <div class="box">
+          <div class="box-title">Polizeibericht</div>
+          ${data.policeReportFile.startsWith('data:image/') 
+            ? `<img src="${data.policeReportFile}" alt="Polizeibericht" style="max-width:100%; max-height:400px; border:1px solid #ccc; border-radius:10px;">`
+            : `<div style="color:#555; font-size:12px;">📎 PDF-Datei hochgeladen (in Druckansicht nicht darstellbar)</div>`}
+        </div>
+        ` : ''}
+
+        ${data.insurancePhoto || data.insuranceData ? `
+        <div class="box">
+          <div class="box-title">Gegnerische Versicherung</div>
+          ${data.insurancePhoto ? `<img src="${data.insurancePhoto}" alt="Versicherung Gegner" style="max-width:100%; max-height:300px; border:1px solid #ccc; border-radius:10px; margin-bottom:8px;">` : ''}
+          ${data.insuranceData ? `<div class="kv"><div class="k">Versicherungsdaten Gegner</div><div class="v" style="font-weight:500; white-space:pre-wrap;">${escapeHtml(data.insuranceData)}</div></div>` : ''}
         </div>
         ` : ''}
 
